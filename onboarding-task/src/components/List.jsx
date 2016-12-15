@@ -3,7 +3,6 @@ import nextId from '../utils/idGenerator.js';
 import CreateItem from './CreateItem';
 import Item from './Item';
 
-
 class List extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +22,7 @@ class List extends React.Component {
   }
 
   _onItemSave(id, value) {
-    const items = Object.assign({}, this.state.items, { [id]: value }) ;
+    const items = Object.assign({}, this.state.items, { [id]: value });
     this.setState({ items });
   }
 
@@ -52,17 +51,16 @@ class List extends React.Component {
       </li>)
     );
 
-
     return (
       <div className="row">
         <div className="col-sm-12 col-md-offset-2 col-md-8">
-        <ul className="list-group">
-          { itemsCode }
-          <li className="list-group-item">
-            <CreateItem onCreate={this._onItemCreate} />
-          </li>
-        </ul>
-      </div>
+          <ul className="list-group">
+            { itemsCode }
+            <li className="list-group-item">
+              <CreateItem onCreate={this._onItemCreate} />
+            </li>
+          </ul>
+        </div>
       </div>
     );
   }
