@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 import guid from '../utils/guid.js';
 import items from '../data/items';
 import CreateItem from './CreateItem';
@@ -9,12 +10,14 @@ class List extends React.Component {
   constructor(props) {
     super(props);
 
-    const editItemsMap = {};
-    const itemsMap = {};
+    const itemsTmp = {};
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      itemsMap[item.id] = item;
+      itemsTmp[item.id] = Immutable.fromJS(item);
     }
+
+    const editItemsMap = Immutable.Map();
+    const itemsMap = Immutable.Map(itemsTmp);
 
     this.state = {
       itemsMap,
@@ -31,9 +34,9 @@ class List extends React.Component {
   }
 
   _onItemSave(id) {
-    const editItemsMap = Object.assign({}, this.state.editItemsMap);
-    const itemsMap = Object.assign({}, this.state.itemsMap, { [id]: editItemsMap[id] });
-    delete editItemsMap[id];
+    const editedItem = this.state.editItemsMap.get(id);
+    const itemsMap = this.state.itemsMap.set(id, editedItem);
+    const editItemsMap = this.state.editItemsMap.delete(id);
 
     this.setState({
       itemsMap,
@@ -42,10 +45,8 @@ class List extends React.Component {
   }
 
   _onItemDelete(id) {
-    let itemsMap = Object.assign({}, this.state.itemsMap);
-    let editItemsMap = Object.assign({}, this.state.editItemsMap);
-    delete itemsMap[id];
-    delete editItemsMap[id];
+    let itemsMap = this.state.itemsMap.delete(id);
+    let editItemsMap = this.state.editItemsMap.delete(id);
 
     this.setState({
       itemsMap,
@@ -55,28 +56,27 @@ class List extends React.Component {
 
   _onItemCreate(value) {
     const newGuid = guid();
-    const newItem = {
+    const newItem = Immutable.fromJS({
       id: newGuid,
       value
-    };
-    const itemsMap = Object.assign({}, this.state.itemsMap, { [newGuid]: newItem });
+    });
+    const itemsMap = this.state.itemsMap.set(newGuid, newItem);
 
     this.setState({ itemsMap });
   }
 
   _onItemClick(id) {
-    var editItemsMap = Object.assign({}, this.state.editItemsMap, { [id]: this.state.itemsMap[id] });
+    var editItemsMap = this.state.editItemsMap.set(id, this.state.itemsMap.get(id));
     this.setState({ editItemsMap });
   }
 
   _onItemChange(newItem) {
-    var editItemsMap = Object.assign({}, this.state.editItemsMap, { [newItem.id]: newItem });
+    var editItemsMap = this.state.editItemsMap.set(newItem.get('id'), newItem);
     this.setState({ editItemsMap });
   }
 
   _onItemCancel(id) {
-    let editItemsMap = Object.assign({}, this.state.editItemsMap);
-    delete editItemsMap[id];
+    let editItemsMap = this.state.editItemsMap.delete(id);
     this.setState({ editItemsMap });
   }
 
@@ -84,10 +84,10 @@ class List extends React.Component {
     let itemsMap = this.state.itemsMap;
     let editItemsMap = this.state.editItemsMap;
 
-    if (editItemsMap[id]) {
+    if (editItemsMap.get(id)) {
       return (
         <EditItem index={index}
-                  item={editItemsMap[id]}
+                  item={editItemsMap.get(id)}
                   onChange={this._onItemChange}
                   onSave={this._onItemSave}
                   onCancel={this._onItemCancel}
@@ -98,14 +98,14 @@ class List extends React.Component {
     return (
       <Item key={id}
             index={index + 1}
-            item={itemsMap[id]}
+            item={itemsMap.get(id)}
             onClick={this._onItemClick}
             onDelete={this._onItemDelete}
       />);
   }
 
   render() {
-    const itemIds = Object.keys(this.state.itemsMap);
+    const itemIds = this.state.itemsMap.keySeq().toArray();
     const itemsCode = itemIds.map((id, index) => (
       <li key={id} className="list-group-item">
         { this._getItemToRender(id, index) }
