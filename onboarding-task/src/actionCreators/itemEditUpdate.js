@@ -1,11 +1,11 @@
 import actionTypes from './../constants/actionTypes';
 
-function itemEditUpdate(id, item) {
+function itemEditUpdate(id, value) {
   return {
     type: actionTypes.ITEM_EDIT_UPDATE,
     payload: {
       id,
-      item,
+      value,
     },
   };
 }

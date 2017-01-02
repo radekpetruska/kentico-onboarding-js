@@ -1,10 +1,8 @@
 import itemsMap from './itemsMap';
-import editItemsMap from './editItemsMap';
 
 function rootReducer(state = {}, action) {
   return {
-    itemsMap,
-    editItemsMap,
+    itemsMap: itemsMap(state.itemsMap, action),
   };
 }
 

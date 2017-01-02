@@ -1,5 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Immutable from 'immutable';
+import itemSave from '../actionCreators/itemSave.js';
+import itemEditUpdate from '../actionCreators/itemEditUpdate.js';
+import itemEditCancel from '../actionCreators/itemEditCancel.js';
+import itemDelete from '../actionCreators/itemDelete.js';
 
 class EditItem extends React.Component {
   static propTypes = {
@@ -13,8 +18,7 @@ class EditItem extends React.Component {
   };
 
   _onChange({ value }) {
-    const changedItem = this.props.item.set('value', value);
-    this.props.onChange(changedItem);
+    this.props.onChange(this.props.item.get('id'), value);
   }
 
   render() {
@@ -23,13 +27,16 @@ class EditItem extends React.Component {
     return (
       <div className="form-inline">
         {this.props.index}.&nbsp;
-        <input value={this.props.item.get('value')}
+        <input value={this.props.item.get('_editValue')}
                className="form-control"
                onChange={(e) => this._onChange({ value: e.target.value })} />
         <button className="btn btn-primary" onClick={() => this.props.onSave(id)}>Save</button>
         <button className="btn btn-default" onClick={() => this.props.onCancel(id)}>Cancel</button>
         <i className="glyphicon glyphicon-remove pull-right"
-           onClick={() => this.props.onDelete(id)}>
+           onClick={(e) => {
+             e.stopPropagation();
+             this.props.onDelete(id)
+           }}>
           <span className="sr-only">Delete</span>
         </i>
       </div>
@@ -37,4 +44,15 @@ class EditItem extends React.Component {
   }
 }
 
-export default EditItem;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSave: (id) => dispatch(itemSave(id)),
+    onChange: (id, item) => dispatch(itemEditUpdate(id, item)),
+    onCancel: (id) => dispatch(itemEditCancel(id)),
+    onDelete: (id) => dispatch(itemDelete(id)),
+  };
+};
+
+export default connect(() => {
+  return {};
+}, mapDispatchToProps)(EditItem);

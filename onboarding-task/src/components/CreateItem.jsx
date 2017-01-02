@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import itemCreate from '../actionCreators/itemCreate.js';
 
 class CreateItem extends React.Component {
   static propTypes = {
@@ -43,4 +45,12 @@ class CreateItem extends React.Component {
   }
 }
 
-export default CreateItem;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onCreate: (value) => dispatch(itemCreate(value)),
+  };
+};
+
+export default connect(() => {
+  return {};
+}, mapDispatchToProps)(CreateItem);
