@@ -27,7 +27,7 @@ class App extends Component {
           </section>
         </div>
         <footer className="footer">
-          <p>&copy; 2016 Kentico Software</p>
+          <p>&copy; 2017 Kentico software</p>
         </footer>
       </div>
     );

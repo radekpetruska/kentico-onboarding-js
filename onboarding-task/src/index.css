@@ -8,3 +8,7 @@ body {
   display: flex;
 
 }
+
+.glyphicon {
+  cursor: pointer;
+}
